@@ -229,7 +229,7 @@ inline bool document::dump_raw_tape(std::ostream &os) const noexcept {
   uint32_t string_length;
   size_t tape_idx = 0;
   uint64_t tape_val = tape[tape_idx];
-  uint8_t type = (tape_val >> 56);
+  uint8_t type = static_cast<uint8_t>(tape_val >> 56);
   os << tape_idx << " : " << type;
   tape_idx++;
   size_t how_many = 0;
@@ -245,7 +245,7 @@ inline bool document::dump_raw_tape(std::ostream &os) const noexcept {
     os << tape_idx << " : ";
     tape_val = tape[tape_idx];
     payload = tape_val & internal::JSON_VALUE_MASK;
-    type = (tape_val >> 56);
+    type = static_cast<uint8_t>(tape_val >> 56);
     switch (type) {
     case '"': // we have a string
       os << "string \"";
@@ -312,7 +312,7 @@ inline bool document::dump_raw_tape(std::ostream &os) const noexcept {
   }
   tape_val = tape[tape_idx];
   payload = tape_val & internal::JSON_VALUE_MASK;
-  type = (tape_val >> 56);
+  type = static_cast<uint8_t>(tape_val >> 56);
   os << tape_idx << " : " << type << "\t// pointing to " << payload
      << " (start root)\n";
   return true;
@@ -471,7 +471,7 @@ inline error_code parser::allocate(size_t capacity, size_t max_depth) noexcept {
     //
     // Initialize stage 1 output
     //
-    uint32_t max_structures = ROUNDUP_N(capacity, 64) + 2 + 7;
+    size_t max_structures = ROUNDUP_N(capacity, 64) + 2 + 7;
     structural_indexes.reset( new (std::nothrow) uint32_t[max_structures] ); // TODO realloc
     if (!structural_indexes) {
       return MEMALLOC;
@@ -565,7 +565,7 @@ inline simdjson_result<element> array::at(const std::string_view &json_pointer) 
   size_t array_index = 0;
   size_t i;
   for (i = 0; i < json_pointer.length() && json_pointer[i] != '/'; i++) {
-    uint8_t digit = uint8_t(json_pointer[i]) - '0';
+    uint8_t digit = static_cast<uint8_t>(json_pointer[i] - '0');
     // Check for non-digit in array index. If it's there, we're trying to get a field in an object
     if (digit > 9) { return INCORRECT_TYPE; }
     array_index = array_index*10 + digit;
@@ -815,9 +815,9 @@ inline simdjson_result<double> element::get<double>() const noexcept {
   // information. (This could also be solved with profile-guided optimization.)
   if(unlikely(!is_double())) { // branch rarely taken
     if(is_uint64()) {
-      return next_tape_value<uint64_t>();
+      return static_cast<double>(next_tape_value<uint64_t>());
     } else if(is_int64()) {
-      return next_tape_value<int64_t>();
+      return static_cast<double>(next_tape_value<int64_t>());
     }
     return INCORRECT_TYPE;
   }

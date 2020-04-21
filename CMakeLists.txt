@@ -55,7 +55,7 @@ if(MSVC)
   target_compile_options(simdjson-flags INTERFACE /WX /W3 /wd4005 /wd4996 /wd4267 /wd4244 /wd4113)
 else()
   target_compile_options(simdjson-flags INTERFACE -fPIC)
-  target_compile_options(simdjson-flags INTERFACE -Werror -Wall -Wextra -Wsign-compare -Wshadow -Wwrite-strings -Wpointer-arith -Winit-self)
+  target_compile_options(simdjson-flags INTERFACE -Werror -Wall -Wextra -Wsign-compare -Wshadow -Wwrite-strings -Wpointer-arith -Winit-self -Wconversion -Wno-sign-conversion)
 endif()
 
 # Optional flags

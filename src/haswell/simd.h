@@ -61,7 +61,7 @@ namespace simd {
   // SIMD byte mask type (returned by things like eq and gt)
   template<>
   struct simd8<bool>: base8<bool> {
-    static really_inline simd8<bool> splat(bool _value) { return _mm256_set1_epi8(-(!!_value)); }
+    static really_inline simd8<bool> splat(bool _value) { return _mm256_set1_epi8(static_cast<uint8_t>(-(!!_value))); }
 
     really_inline simd8<bool>() : base8() {}
     really_inline simd8<bool>(const __m256i _value) : base8<bool>(_value) {}
