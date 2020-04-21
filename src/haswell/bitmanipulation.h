@@ -33,7 +33,7 @@ really_inline uint64_t clear_lowest_bit(uint64_t input_num) {
 
 /* result might be undefined when input_num is zero */
 really_inline int leading_zeroes(uint64_t input_num) {
-  return static_cast<int>(_lzcnt_u64(input_num));
+  return int(_lzcnt_u64(input_num));
 }
 
 #ifdef _MSC_VER

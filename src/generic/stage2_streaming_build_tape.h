@@ -41,7 +41,7 @@ struct streaming_structural_parser: structural_parser {
  ***********/
 WARN_UNUSED error_code implementation::stage2(const uint8_t *buf, size_t len, parser &doc_parser, size_t &next_json) const noexcept {
   static constexpr stage2::unified_machine_addresses addresses = INIT_ADDRESSES();
-  stage2::streaming_structural_parser parser(buf, len, doc_parser, static_cast<uint32_t>(next_json));
+  stage2::streaming_structural_parser parser(buf, len, doc_parser, uint32_t(next_json));
   error_code result = parser.start(len, addresses.finish);
   if (result) { return result; }
   //

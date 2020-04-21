@@ -78,14 +78,14 @@ private:
 really_inline void json_structural_indexer::next(simd::simd8x64<uint8_t> in, json_block block, size_t idx) {
   uint64_t unescaped = in.lteq(0x1F);
   checker.check_next_input(in);
-  indexer.write(static_cast<uint32_t>(idx-64), prev_structurals); // Output *last* iteration's structurals to the parser
+  indexer.write(uint32_t(idx-64), prev_structurals); // Output *last* iteration's structurals to the parser
   prev_structurals = block.structural_start();
   unescaped_chars_error |= block.non_quote_inside_string(unescaped);
 }
 
 really_inline error_code json_structural_indexer::finish(parser &parser, size_t idx, size_t len, bool streaming) {
   // Write out the final iteration's structurals
-  indexer.write(static_cast<uint32_t>(idx-64), prev_structurals);
+  indexer.write(uint32_t(idx-64), prev_structurals);
 
   error_code error = scanner.finish(streaming);
   if (unlikely(error != SUCCESS)) { return error; }
@@ -94,7 +94,7 @@ really_inline error_code json_structural_indexer::finish(parser &parser, size_t 
     return UNESCAPED_CHARS;
   }
 
-  parser.n_structural_indexes = static_cast<uint32_t>(indexer.tail - parser.structural_indexes.get());
+  parser.n_structural_indexes = uint32_t(indexer.tail - parser.structural_indexes.get());
   /* a valid JSON file cannot have zero structural indexes - we should have
    * found something */
   if (unlikely(parser.n_structural_indexes == 0u)) {
@@ -106,7 +106,7 @@ really_inline error_code json_structural_indexer::finish(parser &parser, size_t 
   if (len != parser.structural_indexes[parser.n_structural_indexes - 1]) {
     /* the string might not be NULL terminated, but we add a virtual NULL
      * ending character. */
-    parser.structural_indexes[parser.n_structural_indexes++] = static_cast<uint32_t>(len);
+    parser.structural_indexes[parser.n_structural_indexes++] = uint32_t(len);
   }
   /* make it safe to dereference one beyond this array */
   parser.structural_indexes[parser.n_structural_indexes] = 0;

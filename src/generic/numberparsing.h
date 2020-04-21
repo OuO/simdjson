@@ -16,7 +16,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   if (-22 <= power && power <= 22 && i <= 9007199254740991) {
     // convert the integer into a double. This is lossless since
     // 0 <= i <= 2^53 - 1.
-    double d = static_cast<double>(i);
+    double d = double(i);
     //
     // The general idea is as follows.
     // If 0 <= s < 2^53 and if 10^0 <= p <= 10^22 then
@@ -122,7 +122,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   ///////
   uint64_t upperbit = upper >> 63;
   uint64_t mantissa = upper >> (upperbit + 9);
-  lz += static_cast<int>(1 ^ upperbit);
+  lz += int(1 ^ upperbit);
 
   // Here we have mantissa < (1<<54).
 
@@ -456,7 +456,7 @@ really_inline bool parse_number(UNUSED const uint8_t *const src,
     exponent = first_after_period - p;
   }
   int digit_count =
-      static_cast<int>(p - start_digits) - 1; // used later to guard against overflows
+      int(p - start_digits) - 1; // used later to guard against overflows
   int64_t exp_number = 0;   // exponential part
   if (('e' == *p) || ('E' == *p)) {
     is_float = true;
@@ -513,7 +513,7 @@ really_inline bool parse_number(UNUSED const uint8_t *const src,
         start++;
       }
       // we over-decrement by one when there is a '.'
-      digit_count -= static_cast<int>(start - start_digits);
+      digit_count -= int(start - start_digits);
       if (digit_count >= 19) {
         // Ok, chances are good that we had an overflow!
         // this is almost never going to get called!!!

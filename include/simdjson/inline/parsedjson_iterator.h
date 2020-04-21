@@ -54,7 +54,7 @@ bool dom::parser::Iterator::move_forward() {
 
   location += 1;
   current_val = doc.tape[location];
-  current_type = static_cast<uint8_t>(current_val >> 56);
+  current_type = uint8_t(current_val >> 56);
   return true;
 }
 
@@ -62,7 +62,7 @@ void dom::parser::Iterator::move_to_value() {
   // assume that we are on a key, so move by 1.
   location += 1;
   current_val = doc.tape[location];
-  current_type = static_cast<uint8_t>(current_val >> 56);
+  current_type = uint8_t(current_val >> 56);
 }
 
 bool dom::parser::Iterator::move_to_key(const char *key) {
@@ -139,14 +139,14 @@ bool dom::parser::Iterator::prev() {
     oldnpos = npos;
     if ((current_type == '[') || (current_type == '{')) {
       // we need to jump
-      npos = static_cast<uint32_t>(current_val);
+      npos = uint32_t(current_val);
     } else {
       npos = npos + ((current_type == 'd' || current_type == 'l') ? 2 : 1);
     }
   } while (npos < target_location);
   location = oldnpos;
   current_val = doc.tape[location];
-  current_type = static_cast<uint8_t>(current_val >> 56);
+  current_type = uint8_t(current_val >> 56);
   return true;
 }
 
@@ -159,7 +159,7 @@ bool dom::parser::Iterator::up() {
   depth--;
   location -= 1;
   current_val = doc.tape[location];
-  current_type = static_cast<uint8_t>(current_val >> 56);
+  current_type = uint8_t(current_val >> 56);
   return true;
 }
 
@@ -168,7 +168,7 @@ bool dom::parser::Iterator::down() {
     return false;
   }
   if ((current_type == '[') || (current_type == '{')) {
-    size_t npos = static_cast<uint32_t>(current_val);
+    size_t npos = uint32_t(current_val);
     if (npos == location + 2) {
       return false; // we have an empty scope
     }
@@ -178,7 +178,7 @@ bool dom::parser::Iterator::down() {
     depth_index[depth].start_of_scope = location;
     depth_index[depth].scope_type = current_type;
     current_val = doc.tape[location];
-    current_type = static_cast<uint8_t>(current_val >> 56);
+    current_type = uint8_t(current_val >> 56);
     return true;
   }
   return false;
@@ -187,19 +187,19 @@ bool dom::parser::Iterator::down() {
 void dom::parser::Iterator::to_start_scope() {
   location = depth_index[depth].start_of_scope;
   current_val = doc.tape[location];
-  current_type = static_cast<uint8_t>(current_val >> 56);
+  current_type = uint8_t(current_val >> 56);
 }
 
 bool dom::parser::Iterator::next() {
   size_t npos;
   if ((current_type == '[') || (current_type == '{')) {
     // we need to jump
-    npos = static_cast<uint32_t>(current_val);
+    npos = uint32_t(current_val);
   } else {
     npos = location + (is_number() ? 2 : 1);
   }
   uint64_t next_val = doc.tape[npos];
-  uint8_t next_type = static_cast<uint8_t>(next_val >> 56);
+  uint8_t next_type = uint8_t(next_val >> 56);
   if ((next_type == ']') || (next_type == '}')) {
     return false; // we reached the end of the scope
   }
@@ -221,14 +221,14 @@ dom::parser::Iterator::Iterator(const dom::parser &pj) noexcept(false)
   depth_index = new scopeindex_t[max_depth + 1];
   depth_index[0].start_of_scope = location;
   current_val = doc.tape[location++];
-  current_type = static_cast<uint8_t>(current_val >> 56);
+  current_type = uint8_t(current_val >> 56);
   depth_index[0].scope_type = current_type;
-  tape_length = static_cast<size_t>(current_val & internal::JSON_VALUE_MASK);
+  tape_length = size_t(current_val & internal::JSON_VALUE_MASK);
   if (location < tape_length) {
     // If we make it here, then depth_capacity must >=2, but the compiler
     // may not know this.
     current_val = doc.tape[location];
-    current_type = static_cast<uint8_t>(current_val >> 56);
+    current_type = uint8_t(current_val >> 56);
     depth++;
     assert(depth < max_depth);
     depth_index[depth].start_of_scope = location;
@@ -287,7 +287,7 @@ bool dom::parser::Iterator::print(std::ostream &os, bool escape_strings) const {
   case '}': // we end an object
   case '[': // we start an array
   case ']': // we end an array
-    os << static_cast<char>(current_type);
+    os << char(current_type);
     break;
   default:
     return false;
@@ -314,7 +314,7 @@ bool dom::parser::Iterator::move_to(const char *pointer,
             new_pointer[new_length] = '\\';
             new_length++;
           }
-          new_pointer[new_length] = static_cast<char>(fragment);
+          new_pointer[new_length] = char(fragment);
           i += 3;
 #if __cpp_exceptions
         } catch (std::invalid_argument &) {
@@ -427,7 +427,7 @@ bool dom::parser::Iterator::relative_move_to(const char *pointer,
 
   bool found = false;
   if (is_object()) {
-    if (move_to_key(key_or_index.c_str(), static_cast<uint32_t>(key_or_index.length()))) {
+    if (move_to_key(key_or_index.c_str(), uint32_t(key_or_index.length()))) {
       found = relative_move_to(pointer + offset, length - offset);
     }
   } else if (is_array()) {
@@ -439,14 +439,14 @@ bool dom::parser::Iterator::relative_move_to(const char *pointer,
         size_t npos;
         if ((current_type == '[') || (current_type == '{')) {
           // we need to jump
-          npos = static_cast<uint32_t>(current_val);
+          npos = uint32_t(current_val);
         } else {
           npos =
               location + ((current_type == 'd' || current_type == 'l') ? 2 : 1);
         }
         location = npos;
         current_val = doc.tape[npos];
-        current_type = static_cast<uint8_t>(current_val >> 56);
+        current_type = uint8_t(current_val >> 56);
         return true; // how could it fail ?
       }
     } else { // regular numeric index
