@@ -32,7 +32,7 @@ std::string exec(const char* cmd) {
         std::cerr << "popen() failed!" << std::endl;
         abort();
     }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+    while (fgets(buffer.data(), int(buffer.size()), pipe.get()) != nullptr) {
         result += buffer.data();
     }
     return result;

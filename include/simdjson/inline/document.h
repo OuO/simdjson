@@ -234,7 +234,7 @@ inline bool document::dump_raw_tape(std::ostream &os) const noexcept {
   tape_idx++;
   size_t how_many = 0;
   if (type == 'r') {
-    how_many = tape_val & internal::JSON_VALUE_MASK;
+    how_many = static_cast<size_t>(tape_val & internal::JSON_VALUE_MASK);
   } else {
     // Error: no starting root node?
     return false;
@@ -717,7 +717,7 @@ inline std::string_view object::iterator::key() const noexcept {
   );
 }
 inline const char* object::iterator::key_c_str() const noexcept {
-  return reinterpret_cast<const char *>(&doc->string_buf[tape_value() + sizeof(uint32_t)]);
+  return reinterpret_cast<const char *>(&doc->string_buf[static_cast<size_t>(tape_value()) + sizeof(uint32_t)]);
 }
 inline element object::iterator::value() const noexcept {
   return element(doc, json_index + 1);
@@ -757,7 +757,7 @@ template<>
 inline simdjson_result<const char *> element::get<const char *>() const noexcept {
   switch (tape_ref_type()) {
     case internal::tape_type::STRING: {
-      size_t string_buf_index = tape_value();
+      size_t string_buf_index = static_cast<size_t>(tape_value());
       return reinterpret_cast<const char *>(&doc->string_buf[string_buf_index + sizeof(uint32_t)]);
     }
     default:
@@ -1158,7 +1158,7 @@ really_inline T tape_ref::next_tape_value() const noexcept {
   return x;
 }
 inline std::string_view internal::tape_ref::get_string_view() const noexcept {
-  size_t string_buf_index = tape_value();
+  size_t string_buf_index = static_cast<size_t>(tape_value());
   uint32_t len;
   memcpy(&len, &doc->string_buf[string_buf_index], sizeof(len));
   return std::string_view(

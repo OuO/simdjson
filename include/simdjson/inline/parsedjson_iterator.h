@@ -223,7 +223,7 @@ dom::parser::Iterator::Iterator(const dom::parser &pj) noexcept(false)
   current_val = doc.tape[location++];
   current_type = static_cast<uint8_t>(current_val >> 56);
   depth_index[0].scope_type = current_type;
-  tape_length = current_val & internal::JSON_VALUE_MASK;
+  tape_length = static_cast<size_t>(current_val & internal::JSON_VALUE_MASK);
   if (location < tape_length) {
     // If we make it here, then depth_capacity must >=2, but the compiler
     // may not know this.
